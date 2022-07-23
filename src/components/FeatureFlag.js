@@ -7,6 +7,13 @@ export default class FeatureFlag extends React.Component {
         this.state = props;
     }
 
+    // Zde se nejspíš jedná o anti-pattern
+    componentWillReceiveProps(nextProps, nextContext) {
+        if (nextProps !== this.props) {
+            this.setState(nextProps);
+        }
+    }
+
     render() {
         return (
             <Grid item xs={12} md={6} sx={{textAlign: "left"}}>

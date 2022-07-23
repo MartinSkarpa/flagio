@@ -4,8 +4,6 @@ import React from "react";
 import {onValue, ref} from "firebase/database";
 import {database} from "../database/connection";
 
-const dbRef = ref(database, "/featureFlags");
-
 class Main extends React.Component {
     constructor(props, context) {
         super(props, context);
@@ -15,8 +13,10 @@ class Main extends React.Component {
     }
 
     componentDidMount() {
-        const records = [];
+        const dbRef = ref(database, "/featureFlags");
+
         onValue(dbRef, snapshot => {
+            const records = [];
             snapshot.forEach(item => {
                 console.info("key: " + item.key + ", value: " + item.val());
                 records.push({key: item.key, value: item.val()})
@@ -36,7 +36,7 @@ class Main extends React.Component {
                 <h1>Feature flags</h1>
                 <Container>
                     <Grid container id={"featureFlagsContainer"}>
-                        {this.state.featureFlagsRows.map((row, idx) => {
+                        {this.state.featureFlagsRows.map(row => {
                             return (
                                 <FeatureFlag
                                     name={row.key}
