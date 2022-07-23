@@ -1,9 +1,9 @@
 import {database} from "./connection";
-import {ref, onValue} from "firebase/database";
+import {onValue, ref} from "firebase/database";
 
 function getTestProp() {
     const dbRef = ref(database, "/test");
-    onValue(dbRef, snapshot => console.info("FeatureFlag 'test': " + snapshot.val()));
+    onValue(dbRef, snapshot => console.info("FeatureFlag database test: " + snapshot.val()));
 }
 
 export {getTestProp};
