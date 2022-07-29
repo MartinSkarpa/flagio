@@ -1,44 +1,31 @@
 import {FormControlLabel, Grid, Switch} from "@mui/material";
-import React from "react";
+import {useContext, useEffect, useState} from "react";
 import {database} from "../database/connection";
 import {ref, set} from "firebase/database";
+import {FeatureFlagContext} from "./Main";
 
-export default class FeatureFlag extends React.Component {
-    constructor(props, context) {
-        super(props, context);
-        this.state = props;
-        this.updateState = this.updateState.bind(this);
-    }
+function FeatureFlag() {
+    const [featureFlag, setFeatureFlag] = useState(useContext(FeatureFlagContext));
 
-    // Zde se nejspíš jedná o anti-pattern
-    componentWillReceiveProps(nextProps, nextContext) {
-        if (nextProps !== this.props) {
-            this.setState(nextProps);
-        }
-    }
+    useEffect(() => {
+        const dbRef = ref(database, "/featureFlags/" + featureFlag.name);
 
-    updateState() {
-        const dbRef = ref(database, "/featureFlags/" + this.state.name);
+        set(dbRef, featureFlag.value)
+    }, [featureFlag, setFeatureFlag]);
 
-        this.setState(
-            prevState => ({value: !prevState.value}),
-            () => set(dbRef, this.state.value)
-        );
-    }
-
-    render() {
-        return (
-            <Grid item xs={12} md={6} sx={{textAlign: "left"}}>
-                <FormControlLabel
-                    label={this.state.name}
-                    control={
-                        <Switch
-                            checked={this.state.value}
-                            onClick={this.updateState}
-                        />
-                    }
-                />
-            </Grid>
-        );
-    }
+    return (
+        <Grid item xs={12} md={6} sx={{textAlign: "left"}}>
+            <FormControlLabel
+                label={featureFlag.name}
+                control={
+                    <Switch
+                        checked={featureFlag.value}
+                        onClick={() => setFeatureFlag({...featureFlag, value: !featureFlag.value})}
+                    />
+                }
+            />
+        </Grid>
+    );
 }
+
+export default FeatureFlag;
