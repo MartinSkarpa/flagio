@@ -1,44 +1,31 @@
 import {Container, Grid} from "@mui/material";
 import FeatureFlag from "./FeatureFlag";
 import React, {createContext} from "react";
-import {onValue, ref} from "firebase/database";
+import {off, onValue, ref} from "firebase/database";
 import {database} from "../database/connection";
 
-const FeatureFlagContext = createContext();
-
-function useFeatureFlagList() {
-    const [result, setResult] = React.useState([]);
-    const dbRef = ref(database, "/featureFlags");
-
-    React.useEffect(() => {
-        onValue(dbRef, snapshot => {
-            const records = [];
-            snapshot.forEach(item => {
-                console.info("name: " + item.key + ", value: " + item.val());
-                records.push({name: item.key, value: item.val()});
-            });
-            setResult(records);
-        });
-    }, []);
-
-    return result;
-}
+const FeatureFlagContext = createContext(/*{
+    featureFlag: false,
+    setFeatureFlag: () => {}
+}*/);
 
 function Main() {
-    const featureFlagList = useFeatureFlagList();
-    /*const [featureFlagList, setFeatureFlagList] = React.useState([]);
+    const [featureFlagList, setFeatureFlagList] = React.useState([]);
     const dbRef = ref(database, "/featureFlags");
 
-    React.useEffect(() => {
-        onValue(dbRef, snapshot => {
-            const records = [];
-            snapshot.forEach(item => {
-                console.info("name: " + item.key + ", value: " + item.val());
-                records.push({name: item.key, value: item.val()});
-            });
-            setFeatureFlagList(records);
+    const onUpdateData = snapshot => {
+        const records = [];
+        snapshot.forEach(item => {
+            console.info("name: " + item.key + ", value: " + item.val());
+            records.push({name: item.key, value: item.val()});
         });
-    }, []);*/
+        setFeatureFlagList(records);
+    };
+
+    React.useEffect(() => {
+        onValue(dbRef, onUpdateData);
+        return () => off(dbRef, "value", onUpdateData);
+    }, []);
 
     return (
         <Container

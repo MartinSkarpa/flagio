@@ -1,11 +1,17 @@
 import {FormControlLabel, Grid, Switch} from "@mui/material";
-import {useContext, useEffect, useState} from "react";
+import {useContext, useEffect} from "react";
 import {database} from "../database/connection";
 import {ref, set} from "firebase/database";
 import {FeatureFlagContext} from "./Main";
 
 function FeatureFlag() {
-    const [featureFlag, setFeatureFlag] = useState(useContext(FeatureFlagContext));
+    const featureFlag = useContext(FeatureFlagContext);
+
+    function setFeatureFlag(flag) {
+        const dbRef = ref(database, "/featureFlags/" + flag.name);
+
+        set(dbRef, flag.value)
+    }
 
     useEffect(() => {
         const dbRef = ref(database, "/featureFlags/" + featureFlag.name);
