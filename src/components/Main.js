@@ -1,13 +1,8 @@
 import {Container, Grid} from "@mui/material";
 import FeatureFlag from "./FeatureFlag";
-import React, {createContext} from "react";
+import React from "react";
 import {off, onValue, ref} from "firebase/database";
 import {database} from "../database/connection";
-
-const FeatureFlagContext = createContext(/*{
-    featureFlag: false,
-    setFeatureFlag: () => {}
-}*/);
 
 function Main() {
     const [featureFlagList, setFeatureFlagList] = React.useState([]);
@@ -37,12 +32,8 @@ function Main() {
             <h1>Feature flags</h1>
             <Container>
                 <Grid container id={"featureFlagsContainer"}>
-                    {featureFlagList.map(row => {
-                        return (
-                            <FeatureFlagContext.Provider value={row}>
-                                <FeatureFlag/>
-                            </FeatureFlagContext.Provider>
-                        );
+                    {featureFlagList.map(featureFlag => {
+                        return <FeatureFlag name={featureFlag.name} value={featureFlag.value}/>;
                     })}
                 </Grid>
             </Container>
@@ -50,4 +41,4 @@ function Main() {
     );
 }
 
-export {Main, FeatureFlagContext};
+export {Main};
